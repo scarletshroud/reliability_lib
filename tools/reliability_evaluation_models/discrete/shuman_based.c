@@ -1,6 +1,7 @@
 #include "shuman_based.h"
 
 #include <math.h>
+#include <stddef.h>
 
 static void binary_search() {
 
@@ -20,7 +21,7 @@ uint8_t shuman_collect_reability_stats(const shuman_based_model_t* model, shuman
     float left_equation = 0.0f;
     float right_equation = 0.0f;
 
-    if (model == _NULL || stats == _NULL) {
+    if (model == NULL || stats == NULL) {
         return 1;
     }
 

@@ -14,43 +14,54 @@ set(CMAKE_SYSTEM_NAME Generic)
 set(CMAKE_SYSTEM_PROCESSOR riscv32)
 set(CMAKE_C_COMPILER riscv32-unknown-elf-gcc)
 
-message("[INFO]: toolchain is successfully set.")
+message(STATUS "[INFO]: toolchain is successfully set.")
 
 # create build dir
 if(NOT EXISTS ${CMAKE_SOURCE_DIR}/build)
   file(MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/build)
 endif()
 
-message("[INFO]: build dir is successfully created.")
+message(STATUS "[INFO]: build dir is successfully created.")
 
 # Путь к исходникам
 include_directories(
+  ${CMAKE_SOURCE_DIR}/tools/
   ${CMAKE_SOURCE_DIR}/tools/reliability_mechanisms/error_detection/
-  ${CMAKE_SOURCE_DIR}/platform/
+  ${CMAKE_SOURCE_DIR}/tools/error_monitor/
+
+  ${CMAKE_SOURCE_DIR}/platform/qemu/
+  ${CMAKE_SOURCE_DIR}/platform/adapter/
+
   ${CMAKE_SOURCE_DIR}/snippets/
 )
 
 # Собираем библиотеку
 file(GLOB LIB_SRC
-    ${CMAKE_SOURCE_DIR}/tools/reliability_mechanisms/error_detection/*.c
+  ${CMAKE_SOURCE_DIR}/tools/reliability_mechanisms/error_detection/*.c
+  ${CMAKE_SOURCE_DIR}/tools/error_monitor/*.c
+
+  ${CMAKE_SOURCE_DIR}/platform/qemu/*.c
+  ${CMAKE_SOURCE_DIR}/platform/adapter/*.c
+  
+  ${CMAKE_SOURCE_DIR}/snippets/*.c
 )
 
-message("[INFO]: lib is build successfully.")
+message(STATUS "[INFO]: lib is build successfully.")
 
 add_library(reliability STATIC ${LIB_SRC})
 
 # Собираем пример (main.c)
-add_executable(main_snippet
-    ${CMAKE_SOURCE_DIR}/snippets/main.c
+add_executable(main
+    ${CMAKE_SOURCE_DIR}/main.c
 )
 
-message("[INFO]: snippet is build successfully.")
+message(STATUS "[INFO]: snippet is build successfully.")
 
-target_link_libraries(main_snippet reliability)
+target_link_libraries(main reliability)
 
-message("[INFO]: project is linked successfully.")
+message(STATUS "[INFO]: project is linked successfully.")
 
-target_compile_options(main_snippet PRIVATE -g -O0 -ffreestanding -nostartfiles -Wall -Wextra -march=rv32imc -mabi=ilp32)
-target_link_options(main_snippet PRIVATE -nostartfiles -Ttext=0x0 -Wl,-Map=main_snippet.map)
+target_compile_options(main PRIVATE -g -O0 -ffreestanding -nostartfiles -Wall -Wextra -march=rv32imc -mabi=ilp32)
+target_link_options(main PRIVATE -nostartfiles -Ttext=0x0 -Wl,-Map=main.map)
 
 message(STATUS "[INFO]: Project is configured for RISC-V successfully.")

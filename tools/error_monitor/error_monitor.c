@@ -34,6 +34,8 @@ error_monitor_op_status_t error_monitor_save_event(const char* file, const char*
 void error_monitor_clear(void) {
     error_idx = 0;
     errors_cnt = 0;
+
+    fake_timestamp = 0;
 }
 
 uint32_t error_monitor_err_cnt(void) {

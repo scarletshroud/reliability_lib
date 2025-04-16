@@ -43,7 +43,7 @@ void error_monitor_clear(void);
 /**
  * 
  */
-uint32_t error_monitor_err_cnt();
+uint32_t error_monitor_err_cnt(void);
 
 //const error_event_t* error_monitor_get_recent();
 

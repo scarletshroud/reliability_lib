@@ -32,7 +32,7 @@ assert_op_status_t reliability_assert_handler(const char* expr_str, const char* 
 
         case ASSERT_LEVEL_ERROR:
             // Можно логировать и вернуться, выбросить исключение
-            error_monitor_save_event(file, "c", "assertion failed", line, ERROR_LEVEL_ERROR); 
+            // error_monitor_save_event(file, "c", "assertion failed", line, ERROR_LEVEL_ERROR); 
             break;
 
         case ASSERT_LEVEL_CRITICAL:
@@ -43,7 +43,7 @@ assert_op_status_t reliability_assert_handler(const char* expr_str, const char* 
             // todo: поддержка пользовательского callback
             // todo: возможное создание дампа состояния
 
-            error_monitor_save_event(file, "c", "assertion failed", line, ERROR_LEVEL_CRITICAL); 
+            // error_monitor_save_event(file, "c", "assertion failed", line, ERROR_LEVEL_CRITICAL); 
             
             exit(1);
             break;

@@ -22,7 +22,7 @@ typedef enum {
 #define ASSERT(expr, level)                                                         \
     do {                                                                            \
         if (!(expr)) {                                                              \
-        reliability_assert_handler(##expr, __FILE__, __LINE__, level);              \
+        reliability_assert_handler(#expr, __FILE__, __LINE__, level);               \
         }                                                                           \
     } while (0)                                                                     
 #else

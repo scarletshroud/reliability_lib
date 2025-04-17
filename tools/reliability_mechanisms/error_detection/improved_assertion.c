@@ -1,8 +1,11 @@
 #include "improved_assertion.h"
 
 #include <stdlib.h>
+#include <stdint.h>
 
+#ifdef ASSERT_ERROR_MONITOR_ENABLE 
 #include "error_monitor/error_monitor.h"
+#endif
 
 // todo: https://erdani.org/publications/cuj-08-2003.php.html полезный топик
 
@@ -32,7 +35,11 @@ assert_op_status_t reliability_assert_handler(const char* expr_str, const char* 
 
         case ASSERT_LEVEL_ERROR:
             // Можно логировать и вернуться, выбросить исключение
-            // error_monitor_save_event(file, "c", "assertion failed", line, ERROR_LEVEL_ERROR); 
+            
+            #ifdef ASSERT_ERROR_MONITOR_ENABLE
+            error_monitor_save_event(file, "c", "assertion failed", line, ERROR_LEVEL_ERROR);
+            #endif
+             
             break;
 
         case ASSERT_LEVEL_CRITICAL:
@@ -43,7 +50,9 @@ assert_op_status_t reliability_assert_handler(const char* expr_str, const char* 
             // todo: поддержка пользовательского callback
             // todo: возможное создание дампа состояния
 
-            // error_monitor_save_event(file, "c", "assertion failed", line, ERROR_LEVEL_CRITICAL); 
+            #ifdef ASSERT_ERROR_MONITOR_ENABLE
+            error_monitor_save_event(file, "c", "assertion failed", line, ERROR_LEVEL_CRITICAL); 
+            #endif
             
             exit(1);
             break;

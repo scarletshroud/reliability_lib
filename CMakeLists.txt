@@ -23,6 +23,8 @@ endif()
 
 message(STATUS "[INFO]: build dir is successfully created.")
 
+option(TARGET_PLATFORM "Target platform: qemu | baremetal | freertos" "qemu")
+
 # Путь к исходникам
 include_directories(
   ${CMAKE_SOURCE_DIR}/tools/
@@ -46,6 +48,21 @@ file(GLOB LIB_SRC
   ${CMAKE_SOURCE_DIR}/snippets/*.c
 )
 
+if(TARGET_PLATFORM STREQUAL "qemu")
+  message(STATUS "[INFO]: Building for QEMU")
+  set(LINKER_SCRIPT ${CMAKE_SOURCE_DIR}/platform/qemu/qemu_project.ld)
+  set(STARTUP_FILE ${CMAKE_SOURCE_DIR}/platform/qemu/startup.s)
+
+elseif(TARGET_PLATFORM STREQUAL "baremetal")
+  message(STATUS "[INFO]: Building for Baremetal")
+
+elseif(TARGET_PLATFORM STREQUAL "freertos")
+  message(STATUS "[INFO]: Building for FreeRTOS")
+  
+else()
+  message(FATAL_ERROR "Unknown platform: ${TARGET_PLATFORM}")
+endif()
+
 message(STATUS "[INFO]: lib is build successfully.")
 
 add_library(reliability STATIC ${LIB_SRC})
@@ -62,6 +79,6 @@ target_link_libraries(main reliability)
 message(STATUS "[INFO]: project is linked successfully.")
 
 target_compile_options(main PRIVATE -g -O0 -ffreestanding -nostartfiles -Wall -Wextra -march=rv32imc -mabi=ilp32)
-target_link_options(main PRIVATE -nostartfiles -Ttext=0x0 -Wl,-Map=main.map)
+target_link_options(main PRIVATE -nostartfiles -T${LINKER_SCRIPT} -Wl,-Map=main.map)
 
 message(STATUS "[INFO]: Project is configured for RISC-V successfully.")

@@ -13,7 +13,7 @@ void no_assert_snippet(void) {
 
     if (system_error_case == 0) {
         error_monitor_save_event(__FILE__, "no_assert_snippet", "error", __LINE__, ERROR_LEVEL_ERROR);
-    } 
+    }
 }
 
 void assert_snippet(void) {

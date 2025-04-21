@@ -36,7 +36,7 @@ int main() {
     run_snippet("With assertion", &assert_snippet, 100);
 
     /* Evaluate the effect of reliability mechanism integrity */
-    
+
 
     return 0;
 }

@@ -3,7 +3,7 @@
 # Configuration
 QEMU=qemu-system-riscv32
 MACHINE=virt        # или "virt" — зависит от цели
-KERNEL=build/example.elf
+KERNEL=build/main.elf
 GRAPHIC="-nographic"     # отключить графику, вывод в терминал
 DEBUG_PORT=1234
 

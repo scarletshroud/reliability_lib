@@ -11,12 +11,12 @@ typedef enum {
     VALIDATE_LEVEL_ERROR, // an error
 } validate_level_t;
 
-typedef bool (*validator_func)(const void* value, void* context);
+//bool (*validator_func)(const void* value, void* context);
 
 typedef struct {
     uint8_t id;
     const char* name;
-    validator_func func;
+  //  validator_func func;
     validate_level_t validate_level;
     void* context;
 } validator_rule_t;

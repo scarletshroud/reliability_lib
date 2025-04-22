@@ -1,6 +1,6 @@
 #include "io_platform_adapter.h"
 
-#include "qemu_riscv_uart.h"
+#include "qemu/qemu_riscv_uart.h"
 
 void print(const char *str, adapter_target_t target) {
     switch (target) {

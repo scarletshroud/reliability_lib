@@ -26,7 +26,7 @@ void run_snippet(const char* label, void (*snippet)(void), uint32_t steps) {
     }
 }
 
-int main() {
+int sys_main() {
     /* System init */
     adapter_init(ADAPTER_TARGET_QEMU_RISCV);
     platform_init();

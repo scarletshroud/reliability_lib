@@ -1,6 +1,6 @@
 #include "platform_adapter.h"
 
-#include "qemu_riscv_uart.h"
+#include "qemu/qemu_riscv_uart.h"
 
 static platform_adapter_t adapter;
 

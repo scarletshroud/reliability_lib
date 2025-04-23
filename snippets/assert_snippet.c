@@ -1,5 +1,6 @@
 #include "assert_snippet.h"
 
+#include <math.h>
 #include <stdlib.h>
 
 #include "error_monitor/error_monitor.h"

@@ -8,6 +8,9 @@ void init_target(adapter_target_t target) {
             qemu_riscv_uart_enable();
             break;
 
+        case ADAPTER_TARGET_MK32:
+            break;
+
         default:
             break;
     } 

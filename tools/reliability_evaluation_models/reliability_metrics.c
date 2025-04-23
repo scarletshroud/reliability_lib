@@ -1,5 +1,7 @@
 #include "reliability_metrics.h"
 
+#include <math.h>
+
 #define MAX_FAILURES_TRACKED 256
 
 static uint32_t failure_counter = 0;

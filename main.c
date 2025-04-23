@@ -4,7 +4,7 @@
 #include "snippets/assert_snippet.h"
 #include "tools/error_monitor/error_monitor.h"
 
-#include "mk32_system.h"
+#include "platform/mk32_baremetal/src/mk32_system.h"
 
 void run_snippet(const char* label, void (*snippet)(void), uint32_t steps) {
     error_monitor_clear();

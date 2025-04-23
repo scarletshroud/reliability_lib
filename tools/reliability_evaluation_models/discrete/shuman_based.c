@@ -52,7 +52,7 @@ uint8_t shuman_collect_reability_stats(const shuman_based_model_t* model, shuman
 
         left_equation = errors_cnt * tests_duration / sum;
 
-        if (abs(left_equation - right_equation) < 1) {
+        if (fabs(left_equation - right_equation) < 1) {
             stats->defects_cnt = defects_cnt;
             break;
         }

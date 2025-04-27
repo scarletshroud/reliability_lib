@@ -23,5 +23,5 @@ void assert_snippet(void) {
 
     ASSERT(system_error_case != 0, ERROR_LEVEL_ERROR);
 
-    error_monitor_save_event(__FILE__, "assert_snippet", "error", __LINE__, ERROR_LEVEL_ERROR);
+    //error_monitor_save_event(__FILE__, "assert_snippet", "error", __LINE__, ERROR_LEVEL_ERROR);
 }

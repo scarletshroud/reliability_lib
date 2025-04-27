@@ -7,6 +7,8 @@
 #include "error_monitor/error_monitor.h"
 #endif
 
+#include "adapter/platform_adapter.h"
+
 // todo: https://erdani.org/publications/cuj-08-2003.php.html полезный топик
 
 // todo: добавить значения, которые использовались в expression для дополнения контекста
@@ -35,6 +37,8 @@ assert_op_status_t reliability_assert_handler(const char* expr_str, const char* 
 
         case ASSERT_LEVEL_ERROR:
             // Можно логировать и вернуться, выбросить исключение
+
+        	platform_print("Assert cought error\n");
             
             #ifdef ASSERT_ERROR_MONITOR_ENABLE
             error_monitor_save_event(file, "c", "assertion failed", line, ERROR_LEVEL_ERROR);

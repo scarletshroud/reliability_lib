@@ -1,26 +1,44 @@
-#ifndef SHUMAN_H_
-#define SHUMAN_H_
+// shuman_reliability.h
+#ifndef SHUMAN_RELIABILITY_H
+#define SHUMAN_RELIABILITY_H
 
-#include <stdint.h>
+#include <stddef.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+// Исходные данные для модели Шумана
+typedef struct {
+    // массив длительностей прогонов (часы)
+    const double *t_intervals;
+    // массив числа ошибок в каждом прогоне
+    const size_t *errors;
+    // число прогонов (длина массивов выше)
+    size_t runs;
+    // общее число машинных команд на этапе тестирования
+    double It;
 
-#define SHUMAN_MAX_STEPS 256
+    // контрольная точка A:
+    //   Ec_tA — накопленное число ошибок к tA
+    //   chi_tA — измеренная интенсивность на момент tA
+    double tA, Ec_tA, chi_tA;
 
-    typedef struct {
-        uint32_t total_tests;
-        uint32_t steps_count;
-        uint32_t erros_count[SHUMAN_MAX_STEPS];
-    } shuman_model_data_t;
+    // контрольная точка B:
+    double tB, Ec_tB, chi_tB;
+} ShumanInput;
 
-    void shuman_model_reset();
-    void shuman_model_add_step();
-    void shuman_calc(shuman_model_data_t* shuman_data);
+// Результаты расчётов модели
+typedef struct {
+    double chi;   // интенсивность появления ошибок
+    double Et;    // оценка начального числа ошибок
+    double C;     // коэффициент пропорциональности
+    double R;     // надёжность на следующий интервал
+} ShumanResult;
 
-#ifdef __cplusplus
-}
-#endif
+// Базовые функции (как раньше)
+double calc_intensity(const double *t_intervals, const size_t *errors, size_t r);
+double estimate_Et(double chi_tA, double Ec_tA, double chi_tB, double Ec_tB);
+double estimate_C(double chi_tA, double Ec_tA, double Et, double It);
+double reliability(double C, double Et, double It, double Ec_t1, double t);
 
-#endif
+// «Удобная» обёртка, заполняет ShumanResult по ShumanInput + длине следующего интервала next_t
+void shuman_compute(const ShumanInput *in, ShumanResult *out, double next_t);
+
+#endif // SHUMAN_RELIABILITY_H

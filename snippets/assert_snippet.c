@@ -4,7 +4,7 @@
 #include <stdlib.h>
 
 #include "error_monitor/error_monitor.h"
-#include "reliability_mechanisms/error_detection/improved_assertion.h"
+#include "tools/reliability_mechanisms/single_design/error_detection/improved_assertion.h"
 
 #define RAND_MAX_CASE 5
 

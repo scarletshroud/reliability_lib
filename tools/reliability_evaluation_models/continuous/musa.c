@@ -27,5 +27,8 @@ double musa_failure_intensity_end(double c, double tau, unsigned int M0, double 
 }
 
 double musa_reliability(double lambda, double t) {
-    if (lambda < 0.0) return 1.0;
+    if (lambda < 0.0) {
+    	return 1.0;
+    }
     return exp(-lambda * t);
+}

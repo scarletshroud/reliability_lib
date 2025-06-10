@@ -5,8 +5,7 @@
 extern "C" {
 #endif
 
-    void example_data_diversity_snippet(void);
-    void data_diversity_majority_snippet(void);
+    void data_diversity_snippet(void);
 
 #ifdef __cplusplus
 }

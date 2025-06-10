@@ -1,4 +1,4 @@
-#include <reliability_mechanisms/single_disign/error_detection/cfc_monitor.h>
+#include "cfc_monitor.h"
 #include "error_monitor/error_monitor.h"
 
 void cfc_monitor_init(cfc_monitor_t* monitor) {

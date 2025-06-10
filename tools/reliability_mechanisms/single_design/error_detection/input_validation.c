@@ -1,4 +1,4 @@
-#include <reliability_mechanisms/single_disign/error_detection/input_validation.h>
+#include "input_validation.h"
 #include "error_monitor/error_monitor.h"
 
 bool input_validate_field(const validator_t* validator, const void* value) {

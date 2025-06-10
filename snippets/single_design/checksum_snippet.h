@@ -6,7 +6,6 @@ extern "C" {
 #endif
 
     void checksum_snippet(void);
-    void hamming_snippet(void);
 
 #ifdef __cplusplus
 }

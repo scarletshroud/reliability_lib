@@ -17,6 +17,7 @@ extern "C" {
         bool     active;
 
         /* Statistics */
+        bool timing_violation;
         uint32_t count;
         uint64_t total_time_us;
         uint32_t max_time_us;

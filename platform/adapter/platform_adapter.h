@@ -11,5 +11,6 @@ void adapter_init(adapter_target_t target);
 
 void platform_init();
 void platform_print(const char *str);
+uint32_t platform_timer_get_us();
 
 #endif

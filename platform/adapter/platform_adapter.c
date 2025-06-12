@@ -41,3 +41,9 @@ void platform_print(const char *str) {
     xprintf(str);
 #endif
 }
+
+uint32_t platform_timer_get_us() {
+#ifdef TARGET_MK32
+    return mk32_get_time_us();
+#endif
+}

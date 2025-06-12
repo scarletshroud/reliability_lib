@@ -1,5 +1,7 @@
 #include "mk32_system.h"
 
+#include "HAL/peripherals/Include/mik32_hal_timer32.h"
+
 #include <gpio.h>
 #include "riscv_csr_encoding.h"
 #include "scr1_csr_encoding.h"
@@ -11,6 +13,9 @@
 #include <csr.h>
 #include "uart_lib.h"
 #include "xprintf.h"
+
+static TIMER32_HandleTypeDef htimer32_1;
+static TIMER32_CHANNEL_HandleTypeDef htimer32_channel0;
 
 extern unsigned long __TEXT_START__;
 
@@ -69,4 +74,35 @@ void mk32_system_init() {
 	// global interrupt enable
 	set_csr(mstatus, MSTATUS_MIE);
     set_csr(mie, MIE_MEIE);
+
+	/* Инициализация работы 32-х разрядного таймера */
+	Timer32_1_Init(&htimer32_1, &htimer32_channel0);
+	
+	HAL_Timer32_Channel_Enable(&htimer32_channel0);
+    HAL_Timer32_Value_Clear(&htimer32_1);
+    HAL_Timer32_Start(&htimer32_1);
+}
+
+static void Timer32_1_Init(TIMER32_HandleTypeDef* htimer32_1, TIMER32_CHANNEL_HandleTypeDef* htimer32_channel0) {
+    htimer32_1->Instance = TIMER32_1;
+    htimer32_1->Top = 0xFFFFFFFF;
+    htimer32_1->State = TIMER32_STATE_DISABLE;
+    htimer32_1->Clock.Source = TIMER32_SOURCE_PRESCALER;
+    htimer32_1->Clock.Prescaler = 0;
+    htimer32_1->InterruptMask = 0;
+    htimer32_1->CountMode = TIMER32_COUNTMODE_FORWARD;
+    HAL_Timer32_Init(&htimer32_1);
+
+    htimer32_channel0->TimerInstance = htimer32_1->Instance;
+    htimer32_channel0->ChannelIndex = TIMER32_CHANNEL_0;
+    htimer32_channel0->PWM_Invert = TIMER32_CHANNEL_NON_INVERTED_PWM;
+    htimer32_channel0->Mode = TIMER32_CHANNEL_MODE_CAPTURE;
+    htimer32_channel0->CaptureEdge = TIMER32_CHANNEL_CAPTUREEDGE_RISING;
+    htimer32_channel0->OCR = htimer32_1->Top / 2;
+    htimer32_channel0->Noise = TIMER32_CHANNEL_FILTER_OFF;
+    HAL_Timer32_Channel_Init(&htimer32_channel0);
+}
+
+uint32_t mk32_get_time_us() {
+	return HAL_TIMER32_VALUE_GET(&htimer32_1);
 }

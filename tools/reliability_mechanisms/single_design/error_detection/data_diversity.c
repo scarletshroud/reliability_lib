@@ -4,7 +4,7 @@
 
 #include "error_monitor/error_monitor.h"
 
-bool data_diversity_execute(
+uint8_t data_diversity_execute(
     void (*target_fn)(void* result, const void* input),
     data_diversity_compare_fn compare,
     const void** input_variants,
@@ -14,7 +14,7 @@ bool data_diversity_execute(
     const char* context
 ) {
     if (!target_fn || !compare || !input_variants || !result_buffers || input_count < 2) {
-        return false;
+        return 0;
     }
 
     // Выполнить функцию для всех вариантов входных данных
@@ -26,7 +26,7 @@ bool data_diversity_execute(
         for (uint32_t i = 1; i < input_count; ++i) {
             if (!compare(result_buffers[0], result_buffers[i])) {
                 error_monitor_save_event(__FILE__, context, "Data diversity strict mismatch", __LINE__, ERROR_LEVEL_ERROR);
-                return false;
+                return 0;
             }
         }
     } else if (voting == VOTING_MAJORITY) {
@@ -38,11 +38,11 @@ bool data_diversity_execute(
         }
         if (votes <= (input_count / 2)) {
             error_monitor_save_event(__FILE__, context, "Data diversity majority mismatch", __LINE__, ERROR_LEVEL_ERROR);
-            return false;
+            return 0;
         }
     }
 
-    return true;
+    return 1;
 }
 
 // Простейшее перемешивание массива (Fisher-Yates shuffle)

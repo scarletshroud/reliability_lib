@@ -6,28 +6,28 @@ void deadline_monitor_init(deadline_monitor_t* monitor, uint32_t deadline_us) {
     monitor->start_time = 0;
     monitor->stop_time = 0;
     monitor->deadline_us = deadline_us;
-    monitor->active = false;
-    monitor->timing_violation = false;
+    monitor->active = 0;
+    monitor->timing_violation = 0;
 }
 
 void deadline_monitor_start(deadline_monitor_t* monitor) {
     monitor->start_time = platform_timer_get_us();
-    monitor->active = true;
+    monitor->active = 1;
 }
 
 void deadline_monitor_stop(deadline_monitor_t* monitor, const char* context) {
     if (!monitor->active) {
-        return; // Нельзя остановить неактивный монитор
+        return;
     }
 
     monitor->stop_time = platform_timer_get_us();
     monitor->stop_time = get_time_us();
-    monitor->active = false;
+    monitor->active = 0;
 
     uint32_t elapsed = monitor->stop_time - monitor->start_time;
 
     if (elapsed > monitor->deadline_us) {
-        monitor->timing_violation = true;
+        monitor->timing_violation = 1;
         error_monitor_save_event(__FILE__, context, "Deadline violation", __LINE__, ERROR_LEVEL_ERROR);
     }
 

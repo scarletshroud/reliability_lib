@@ -2,7 +2,6 @@
 #define DEADLINE_MONITOR_H_
 
 #include <stdint.h>
-#include <stdbool.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -11,32 +10,37 @@ extern "C" {
     *
     */
     typedef struct {
-        uint32_t start_time;  // метка начала отсчета
-        uint32_t stop_time;   // метка окончания отсчета
-        uint32_t deadline_us; // допустимое время выполнения в микросекундах
-        bool     active;
+        uint32_t start_time;    /* Метка начала отсчета */
+        uint32_t stop_time;     /* Метка окончания отсчета */
+        uint32_t deadline_us;   /* Допустимое время выполнения в микросекундах */
+        uint8_t     active;        /* Активность монитора */
 
         /* Statistics */
-        bool timing_violation;
-        uint32_t count;
-        uint64_t total_time_us;
-        uint32_t max_time_us;
-        uint32_t min_time_us;
+        uint8_t timing_violation;  /* Превышение времени */
+        uint32_t count;         /* Максимальное время выполнения */
+        uint64_t total_time_us; /* Итоговое время выполнения */
+        uint32_t max_time_us;   /* Максимальное время выполнения */
+        uint32_t min_time_us;   /* Минимальное время выполнения */
     } deadline_monitor_t;
 
     /**
-     *
-     */
+     * \brief           Функция инициализации монитора проверки временных ограничений
+     * \param[in]       monitor: Указатель на монитор
+     * \param[in]       dealine_us: Указатель на дедлайн выполнения
+    */
     void deadline_monitor_init(deadline_monitor_t* monitor, uint32_t deadline_us);
 
     /**
-     *
-     */
+     * \brief           Функция запуска монитора проверки временных ограничений
+     * \param[in]       monitor: Указатель на монитор
+    */
     void deadline_monitor_start(deadline_monitor_t* monitor);
 
     /**
-     *
-     */
+     * \brief           Функция остановки монитора
+     * \param[in]       monitor: Указатель на монитор
+     * \param[in]       context: Контекст выполнения
+    */
     void deadline_monitor_stop(deadline_monitor_t* monitor, const char* context);
 
     /// Получить среднее время выполнения операции (в микросекундах)

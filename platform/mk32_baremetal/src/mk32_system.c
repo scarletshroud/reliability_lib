@@ -2,15 +2,15 @@
 
 #include "mk32_baremetal/HAL/peripherals/Include/mik32_hal_timer32.h"
 
-#include <gpio.h>
+#include "gpio.h"
 #include "riscv_csr_encoding.h"
 #include "scr1_csr_encoding.h"
 #include "mcu32_memory_map.h"
-#include <power_manager.h>
+#include "power_manager.h"
 #include "pad_config.h"
-#include <gpio_irq.h>
-#include <epic.h>
-#include <csr.h>
+#include "gpio_irq.h"
+#include "epic.h"
+#include "csr.h"
 #include "uart_lib.h"
 #include "xprintf.h"
 
@@ -106,3 +106,25 @@ void mk32_system_init() {
 uint32_t mk32_get_time_us() {
 	return HAL_TIMER32_VALUE_GET(&htimer32_1);
 }
+
+/* WDT */
+
+/*
+
+#include "mik32_hal_wdt.h"
+
+WDT_HandleTypeDef hwdt;
+
+void WDT_Init(uint32_t timeout)
+{
+    hwdt.Instance = WDT;
+
+    hwdt.Init.Clock = HAL_WDT_OSC32K;
+    hwdt.Init.ReloadMs = 1000;
+    if (HAL_WDT_Init(&hwdt, timeout) != HAL_OK)
+    {
+        xprintf("ERROR: HAL_WDT_Init\n");
+    }
+}
+
+*/

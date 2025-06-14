@@ -2,12 +2,12 @@
 
 #include "error_monitor/error_monitor.h"
 
-bool data_property_check_single(const property_checker_t* checker, const void* structure) {
+uint8_t data_property_check_single(const property_checker_t* checker, const void* structure) {
     if (!checker || !checker->check_function) {
-        return false;
+        return  0;
     }
 
-    bool ok = checker->check_function(structure);
+    uint8_t ok = checker->check_function(structure);
     if (!ok) {
         error_monitor_save_event(
             __FILE__,
@@ -20,15 +20,15 @@ bool data_property_check_single(const property_checker_t* checker, const void* s
     return ok;
 }
 
-bool data_property_check_all(const property_checker_t* checkers, uint32_t count, const void* structure) {
+uint8_t data_property_check_all(const property_checker_t* checkers, uint32_t count, const void* structure) {
     if (!checkers || count == 0) {
-        return false;
+        return 0;
     }
 
-    bool overall_ok = true;
+    uint8_t overall_ok = 1;
     for (uint32_t i = 0; i < count; ++i) {
         if (!data_property_check_single(&checkers[i], structure)) {
-            overall_ok = false;
+            overall_ok = 0;
         }
     }
     return overall_ok;

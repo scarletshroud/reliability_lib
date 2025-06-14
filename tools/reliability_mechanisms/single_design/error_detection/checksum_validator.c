@@ -74,7 +74,7 @@ uint8_t hamming74_encode(uint8_t nibble) {
     return encoded;
 }
 
-uint8_t hamming74_decode(uint8_t encoded, bool* error_corrected, bool* uncorrectable_error) {
+uint8_t hamming74_decode(uint8_t encoded, uint8_t* error_corrected, uint8_t* uncorrectable_error) {
     uint8_t p1 = (encoded >> 6) & 0x1;
     uint8_t p2 = (encoded >> 5) & 0x1;
     uint8_t d1 = (encoded >> 4) & 0x1;
@@ -92,15 +92,15 @@ uint8_t hamming74_decode(uint8_t encoded, bool* error_corrected, bool* uncorrect
     if (syndrome != 0) {
         if (syndrome <= 7) {
             encoded ^= (1 << (7 - syndrome)); // исправляем ошибочный бит
-            *error_corrected = true;
-            *uncorrectable_error = false;
+            *error_corrected = 1;
+            *uncorrectable_error = 0;
         } else {
-            *uncorrectable_error = true;
+            *uncorrectable_error = 1;
             return 0xFF; // Невозможно исправить
         }
     } else {
-        *error_corrected = false;
-        *uncorrectable_error = false;
+        *error_corrected = 0;
+        *uncorrectable_error = 0;
     }
 
     uint8_t decoded = ((encoded >> 4) & 0x1) | ((encoded >> 2) & 0x2) | ((encoded >> 1) & 0x4) | ((encoded >> 0) & 0x8);

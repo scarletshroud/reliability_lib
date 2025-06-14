@@ -1,8 +1,9 @@
 #include "improved_assertion.h"
+
 #include <stdlib.h>
 #include <stdint.h>
 
-#ifdef ASSERT_ERROR_MONITOR_ENABLE 
+#ifdef ERROR_MONITOR_ENABLE 
 #include "error_monitor/error_monitor.h"
 #endif
 
@@ -40,7 +41,7 @@ assert_op_status_t reliability_assert_handler(const char* expr_str, const char* 
 
             platform_print("Assert cought error\n");
 
-#ifdef ASSERT_ERROR_MONITOR_ENABLE
+#ifdef ERROR_MONITOR_ENABLE
             error_monitor_save_event(file, "c", "assertion failed", line, ERROR_LEVEL_ERROR);
 #endif
 
@@ -54,11 +55,11 @@ assert_op_status_t reliability_assert_handler(const char* expr_str, const char* 
             // todo: поддержка пользовательского callback
             // todo: возможное создание дампа состояния
 
-#ifdef ASSERT_ERROR_MONITOR_ENABLE
+#ifdef  ERROR_MONITOR_ENABLE
             error_monitor_save_event(file, "c", "assertion failed", line, ERROR_LEVEL_CRITICAL);
 #endif
 
-            exit(1);
+            //exit(1);
             break;
 
         default:

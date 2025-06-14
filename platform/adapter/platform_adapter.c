@@ -47,3 +47,24 @@ uint32_t platform_timer_get_us() {
     return mk32_get_time_us();
 #endif
 }
+
+/* WDT */
+
+void platform_wdt_init(uint32_t timeout) {
+#ifdef TARGET_MK32
+  
+#endif
+}
+
+void platform_wdt_start() {
+#ifdef TARGET_MK32
+  
+#endif
+}
+
+void platform_wdt_kick() {
+#ifdef TARGET_MK32
+  
+#endif
+}
+

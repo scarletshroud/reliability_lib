@@ -9,7 +9,7 @@ void cfc_monitor_enter(cfc_monitor_t* monitor, uint32_t block_signature) {
     monitor->signature = block_signature;
 }
 
-bool cfc_monitor_check(cfc_monitor_t* monitor, uint32_t expected_signature, const char* context) {
+uint8_t cfc_monitor_check(cfc_monitor_t* monitor, uint32_t expected_signature, const char* context) {
     if (monitor->signature != expected_signature) {
         error_monitor_save_event(
             __FILE__, context,
@@ -17,7 +17,7 @@ bool cfc_monitor_check(cfc_monitor_t* monitor, uint32_t expected_signature, cons
             __LINE__,
             ERROR_LEVEL_CRITICAL
         );
-        return false;
+        return 0;
     }
-    return true;
+    return 1;
 }

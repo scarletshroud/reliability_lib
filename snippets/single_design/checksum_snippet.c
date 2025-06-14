@@ -94,7 +94,7 @@ void run_transmission_error_case(bool inject_fault) {
 }
 
 void checksum_snippet() {
-    srand((unsigned int)time(NULL));
+    srand(12345);
 
     for (int i = 0; i < ITERATIONS; ++i) {
         total_runs++;

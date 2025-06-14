@@ -88,7 +88,7 @@ static void run_dynamic_checkpoint_case() {
 }
 
 void checkpoint_restart_snippet(void) {
-    srand((unsigned int)time(NULL));
+    srand(12345);
     platform_print("\n=== STATIC CHECKPOINT TEST ===\n");
 
     for (int i = 0; i < ITERATIONS; i++) {

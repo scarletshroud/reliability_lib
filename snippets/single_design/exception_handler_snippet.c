@@ -82,7 +82,8 @@ void run_invalid_pointer_case(bool inject_fault) {
 }
 
 void exception_handler_snippet(void) {
-    srand((unsigned int)time(NULL));
+    srand(12345);
+    
     exception_handler_init(my_exception_logger);
 
     for (int i = 0; i < ITERATIONS; i++) {

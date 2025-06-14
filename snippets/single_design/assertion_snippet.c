@@ -1,14 +1,12 @@
-#include <assertion_snippet.h>
+#include "assertion_snippet.h"
+
 #include <stdint.h>
 #include <stdlib.h>
-#include <stdbool.h>
 #include <time.h>
 
-#define ENABLE_ASSERTS 1
-
 #include "reliability_mechanisms/single_design/error_detection/improved_assertion.h"
-#include "error_monitor/error_monitor.h"
 
+#include "error_monitor/error_monitor.h"
 #include "platform/adapter/platform_adapter.h"
 
 #define ITERATIONS 1000
@@ -18,7 +16,7 @@ static uint32_t total_runs = 0;
 static uint32_t injected_faults = 0;
 static uint32_t detected_errors = 0;
 
-/* -- Range Violation Case -- */
+/* -- Кейс с нарушением диапазона данных -- */
 static void test_range_violation() {
     int temp;
     uint8_t fault = ((float)rand() / RAND_MAX) < ERROR_PROBABILITY;
@@ -34,22 +32,24 @@ static void test_range_violation() {
     ASSERT(temp >= -40 && temp <= 125, ASSERT_LEVEL_ERROR);
 }
 
-/* -- Unitilized State Case -- */
+/* -- Кейс с отсутствием инициализированного состояние -- */
 static void test_state_flag() {
-    bool state;
+    uint8_t state;
 
     uint8_t fault = ((float)rand() / RAND_MAX) < ERROR_PROBABILITY;
+
     if (fault) {
-        state = false;
+        state = 0;
         injected_faults++;
     }
     else {
-        state = true;
+        state = 1;
     }
-    ASSERT(state == true, ASSERT_LEVEL_ERROR);
+
+    ASSERT(state == 1, ASSERT_LEVEL_ERROR);
 }
 
-/* -- Null Pointer Case -- */
+/* -- Кейс с NULL-Pointer Exception -- */
 static void test_null_pointer() {
     uint8_t fault = ((float)rand() / RAND_MAX) < ERROR_PROBABILITY;
 
@@ -65,7 +65,7 @@ static void test_null_pointer() {
 }
 
 void assertion_snippet(void) {
-    srand((unsigned int)time(NULL));
+    srand(12345);
 
     for (int i = 0; i < ITERATIONS; i++) {
         total_runs++;
@@ -87,6 +87,7 @@ void assertion_snippet(void) {
     detected_errors = error_monitor_err_cnt();
 
     platform_print("\n=== ASSERTION EXPERIMENT REPORT ===\n");
+    
 /*  printf("Total iterations     : %d\n", total_runs);
     printf("Injected faults      : %d\n", injected_faults);
     printf("Detected ASSERTs     : %d\n", detected_errors);

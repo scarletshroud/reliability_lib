@@ -68,7 +68,7 @@ void run_process_pair_active_active_case(bool inject_fault) {
 }
 
 int process_pair_active_snippet() {
-    srand((unsigned int)time(NULL));
+    srand(12345);
 
     for (int i = 0; i < ITERATIONS; ++i) {
         bool inject = ((float)rand() / RAND_MAX) < ERROR_PROBABILITY;

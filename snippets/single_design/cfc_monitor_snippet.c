@@ -30,123 +30,154 @@ static int true_positives = 0;
 static int true_negatives = 0;
 static int total_time = 0;
 
+/**
+ * @brief Моделирует выполнение конечного автомата (FSM) с возможной инъекцией ошибки.
+ *
+ * Последовательно проходит через состояния: IDLE → INIT → ACTIVE → DONE.
+ * При включённой инъекции может быть добавлена ошибка в сигнал перехода.
+ * Каждое состояние проверяется с помощью CFC.
+ */
 void run_fsm_case(cfc_monitor_t* monitor, bool inject_fault) {
-    bool detected = false;
+	bool detected = false;
 
-    CFC_ENTER(monitor, SIG_IDLE);
-    if (!CFC_CHECK(monitor, SIG_IDLE)) detected = true;
+	// Переход к состоянию IDLE
+	CFC_ENTER(monitor, SIG_IDLE);
+	if (!CFC_CHECK(monitor, SIG_IDLE)) {
+		detected = true;
+	}
 
-    if (inject_fault) {
-        uint32_t wrong_sig = ((float)rand() / RAND_MAX < FN_PROBABILITY) ? SIG_INIT : SIG_INIT + 1;
+	// Возможная инъекция ошибки в переход INIT
+	if (inject_fault) {
+		// Иногда специально делаем вид, что ошибка не была инъецирована (ложноотрицательная проверка)
+		uint32_t wrong_sig = ((float)rand() / RAND_MAX < FN_PROBABILITY) ? SIG_INIT : SIG_INIT + 1;
+		CFC_ENTER(monitor, wrong_sig);
+		if (wrong_sig != SIG_INIT) injected_faults++;
+	} else {
+		CFC_ENTER(monitor, SIG_INIT);
+	}
 
-        CFC_ENTER(monitor, wrong_sig);
+	if (!CFC_CHECK(monitor, SIG_INIT)) {
+		detected = true;
+	}
 
-        if (wrong_sig != SIG_INIT) injected_faults++;
-    }
-    else {
-        CFC_ENTER(monitor, SIG_INIT);
-    }
-    if (!CFC_CHECK(monitor, SIG_INIT)) detected = true;
+	// Переход в состояние ACTIVE
+	CFC_ENTER(monitor, SIG_ACTIVE);
+	if (!CFC_CHECK(monitor, SIG_ACTIVE)) {
+		detected = true;
+	}
 
-    CFC_ENTER(monitor, SIG_ACTIVE);
-    if (!CFC_CHECK(monitor, SIG_ACTIVE)) detected = true;
+	// Переход в состояние DONE
+	CFC_ENTER(monitor, SIG_DONE);
+	if (!CFC_CHECK(monitor, SIG_DONE)) {
+		detected = true;
+	}
 
-    CFC_ENTER(monitor, SIG_DONE);
-    if (!CFC_CHECK(monitor, SIG_DONE)) detected = true;
-
-    if (inject_fault && detected) true_positives++;
-    else if (inject_fault && !detected) false_negatives++;
-    else if (!inject_fault && !detected) true_negatives++;
+	// Учет результата обнаружения ошибки
+	if (inject_fault && detected) true_positives++;
+	else if (inject_fault && !detected) false_negatives++;
+	else if (!inject_fault && !detected) true_negatives++;
 }
 
+/**
+ * @brief Выполняет "завершающий" переход, с возможной инъекцией ошибки.
+ */
 void return_with_monitor(cfc_monitor_t* monitor, bool inject_fault) {
-    if (inject_fault) {
-        uint32_t sig = ((float)rand() / RAND_MAX < FN_PROBABILITY) ? SIG_EXIT_OK : SIG_EXIT_OK + 1;
-        if (sig != SIG_EXIT_OK) {
-            injected_faults++;
-        }
-        CFC_ENTER(monitor, sig);
-    }
-    else {
-        CFC_ENTER(monitor, SIG_EXIT_OK);
-    }
+	if (inject_fault) {
+		// Возможная подмена корректного сигнала SIG_EXIT_OK на ошибочный
+		uint32_t sig = ((float)rand() / RAND_MAX < FN_PROBABILITY) ? SIG_EXIT_OK : SIG_EXIT_OK + 1;
+		if (sig != SIG_EXIT_OK) {
+			injected_faults++;
+		}
+		CFC_ENTER(monitor, sig);
+	} else {
+		CFC_ENTER(monitor, SIG_EXIT_OK);
+	}
 }
 
+/**
+ * @brief Моделирует другой тип выполнения с переходом: IDLE → EXIT_OK.
+ *
+ * Тестирует возможность некорректного выхода из системы.
+ */
 void run_return_case(cfc_monitor_t* monitor, bool inject_fault) {
-    bool injected = false, detected = false;
+	bool detected = false;
 
-    CFC_ENTER(monitor, SIG_IDLE);
-    if (!CFC_CHECK(monitor, SIG_IDLE)) detected = true;
+	CFC_ENTER(monitor, SIG_IDLE);
+	if (!CFC_CHECK(monitor, SIG_IDLE)) {
+		detected = true;
+	}
 
-    return_with_monitor(monitor, inject_fault);
-    if (!CFC_CHECK(monitor, SIG_EXIT_OK)) detected = true;
+	return_with_monitor(monitor, inject_fault);
 
-    if (inject_fault && detected) true_positives++;
-    else if (inject_fault && !detected) false_negatives++;
-    else if (!inject_fault && !detected) true_negatives++;
+	if (!CFC_CHECK(monitor, SIG_EXIT_OK)) {
+		detected = true;
+	}
+
+	if (inject_fault && detected) true_positives++;
+	else if (inject_fault && !detected) false_negatives++;
+	else if (!inject_fault && !detected) true_negatives++;
 }
 
-#define CFC_CHECK_TIME
-
+/**
+ * @brief Основная функция-эксперимент с CFC-монитором.
+ *
+ * Циклически выполняет тестовые сценарии с возможной инъекцией ошибок
+ * и собирает статистику.
+ */
 void cfc_monitor_snippet() {
-    srand(12345);
+	srand(12345);  // Фиксированный seed для воспроизводимости
 
-    total_runs = 0;
-    injected_faults = 0;
-    detected_errors = 0;
-    false_negatives = 0;
-    true_positives = 0;
-    true_negatives = 0;
-    error_monitor_clear();
+	// Обнуление статистики
+	total_runs = 0;
+	injected_faults = 0;
+	detected_errors = 0;
+	false_negatives = 0;
+	true_positives = 0;
+	true_negatives = 0;
+	error_monitor_clear();
 
-    for (int i = 0; i < ITERATIONS; i++) {
-        total_runs++;
-        cfc_monitor_t monitor;
-        cfc_monitor_init(&monitor);
+	for (int i = 0; i < ITERATIONS; i++) {
+		total_runs++;
+		cfc_monitor_t monitor;
+		cfc_monitor_init(&monitor);
 
-#ifdef CFC_CHECK_TIME
-        for (int j = 0; j < ITERATIONS; ++j) {
-            uint32_t f = (uint32_t)(rand() % 5 * 10);
-            uint32_t s = (uint32_t)(rand() % 5 * 10);
-            int start = get_time_us();
+		// Случайная генерация флага инъекции ошибки
+		bool inject = ((float)rand() / RAND_MAX) < ERROR_PROBABILITY;
 
-            CFC_ENTER(&monitor, f);
-            CFC_CHECK(&monitor, s);
+		// Случайный выбор типа тестового кейса
+		if (rand() % 2 == 0) {
+			run_fsm_case(&monitor, inject);
+		} else {
+			run_return_case(&monitor, inject);
+		}
+	}
 
-            total_time += get_time_us() - start;
-        }
-#endif
+	// Вывод заголовка финального отчёта
+	platform_print("\n=== FINAL CFC MONITOR EXPERIMENT REPORT ===\n");
 
-        bool inject = ((float)rand() / RAND_MAX) < ERROR_PROBABILITY;
-
-        if (rand() % 2 == 0) {
-            run_fsm_case(&monitor, inject);
-        }
-        else {
-            run_return_case(&monitor, inject);
-        }
-    }
-
-    platform_print("\n=== FINAL CFC MONITOR EXPERIMENT REPORT ===\n");
-
-    /*printf("FN_PROBABILITY  : %f\n", FN_PROBABILITY);
-    printf("Total iterations     : %d\n", total_runs);
-    printf("Injected faults      : %d\n", injected_faults);
-    printf("Detected CFC errors  : %d\n", error_monitor_err_cnt());
-    printf("False Negatives (FN) : %d\n", false_negatives);
-    printf("True Negatives (TN)  : %d\n", true_negatives);
-
-    */
+	/*
+	printf("FN_PROBABILITY  : %f\n", FN_PROBABILITY);
+	printf("Total iterations     : %d\n", total_runs);
+	printf("Injected faults      : %d\n", injected_faults);
+	printf("Detected CFC errors  : %d\n", error_monitor_err_cnt());
+	printf("False Negatives (FN) : %d\n", false_negatives);
+	printf("True Negatives (TN)  : %d\n", true_negatives);
+	*/
 }
 
+/**
+ * @brief Главная функция, которая запускает cfc_monitor_snippet() с разными уровнями FN_PROBABILITY.
+ *
+ * Исследует поведение CFC-монитора при различной вероятности ложных негативов.
+ */
 int cfc_main() {
-    float fn_probs[] = { 0.0, 0.05, 0.10, 0.15, 0.20, 0.30 };
-    int count = sizeof(fn_probs) / sizeof(fn_probs[0]);
+	float fn_probs[] = { 0.0, 0.05, 0.10, 0.15, 0.20, 0.30 };
+	int count = sizeof(fn_probs) / sizeof(fn_probs[0]);
 
-    for (int i = 0; i < count; i++) {
-        FN_PROBABILITY = fn_probs[i];
-        cfc_snippet();
-    }
+	for (int i = 0; i < count; i++) {
+		FN_PROBABILITY = fn_probs[i];
+		cfc_snippet();  // Вызов с текущим уровнем FN_PROBABILITY
+	}
 
-    return 0;
+	return 0;
 }

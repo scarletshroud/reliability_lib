@@ -1,6 +1,7 @@
 #include "system_behavior_monitor.h"
-#include "error_monitor/error_monitor.h"      // Для фиксации ошибок
 
+#include "tools/tools_config.h"
+#include "error_monitor/error_monitor.h"      // Для фиксации ошибок
 #include "platform/adapter/platform_adapter.h"
 
 void behavior_monitor_init(behavior_monitor_t* monitor, uint32_t timeout_us, const char* context) {
@@ -34,6 +35,8 @@ uint8_t behavior_monitor_check(const behavior_monitor_t* monitor) {
     uint32_t elapsed = now - monitor->last_kick_timestamp_us;
 
     if (elapsed > monitor->timeout_us) {
+
+#ifdef ERROR_MONITOR_ENABLE
         error_monitor_save_event(
             __FILE__,
             monitor->monitored_context,
@@ -41,6 +44,8 @@ uint8_t behavior_monitor_check(const behavior_monitor_t* monitor) {
             __LINE__,
             ERROR_LEVEL_CRITICAL
         );
+#endif
+
         return 0;
     }
 

@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <stdint.h>
 
+#include "tools/tools_config.h"
+
 #ifdef ERROR_MONITOR_ENABLE 
 #include "error_monitor/error_monitor.h"
 #endif

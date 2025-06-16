@@ -2,7 +2,11 @@
 
 #include <stdlib.h>
 
+#include "tools/tools_config.h"
+
+#ifdef ERROR_MONITOR_ENABLE
 #include "error_monitor/error_monitor.h"
+#endif
 
 uint8_t data_diversity_execute(
     void (*target_fn)(void* result, const void* input),
@@ -25,7 +29,11 @@ uint8_t data_diversity_execute(
     if (voting == VOTING_STRICT_COMPARE) {
         for (uint32_t i = 1; i < input_count; ++i) {
             if (!compare(result_buffers[0], result_buffers[i])) {
+
+#ifdef ERROR_MONITOR_ENABLE
                 error_monitor_save_event(__FILE__, context, "Data diversity strict mismatch", __LINE__, ERROR_LEVEL_ERROR);
+#endif
+
                 return 0;
             }
         }
@@ -37,7 +45,9 @@ uint8_t data_diversity_execute(
             }
         }
         if (votes <= (input_count / 2)) {
+#ifdef ERROR_MONITOR_ENABLE
             error_monitor_save_event(__FILE__, context, "Data diversity majority mismatch", __LINE__, ERROR_LEVEL_ERROR);
+#endif
             return 0;
         }
     }

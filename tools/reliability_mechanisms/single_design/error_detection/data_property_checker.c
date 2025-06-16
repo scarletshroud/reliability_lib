@@ -1,6 +1,11 @@
 #include "data_property_checker.h"
 
+
+#include "tools/tools_config.h"
+
+#ifdef ERROR_MONITOR_ENABLE
 #include "error_monitor/error_monitor.h"
+#endif
 
 uint8_t data_property_check_single(const property_checker_t* checker, const void* structure) {
     if (!checker || !checker->check_function) {
@@ -9,6 +14,8 @@ uint8_t data_property_check_single(const property_checker_t* checker, const void
 
     uint8_t ok = checker->check_function(structure);
     if (!ok) {
+
+#ifdef ERROR_MONITOR_ENABLE
         error_monitor_save_event(
             __FILE__,
             checker->property_name,
@@ -16,6 +23,8 @@ uint8_t data_property_check_single(const property_checker_t* checker, const void
             __LINE__,
             ERROR_LEVEL_ERROR
         );
+#endif
+
     }
     return ok;
 }

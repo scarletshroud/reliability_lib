@@ -1,5 +1,6 @@
 #include "process_pair.h"
 
+#include "tools/tools_config.h"
 #include "error_monitor/error_monitor.h"
 
 #ifndef TARGET_FREERTOS
@@ -16,10 +17,18 @@ bool process_pair_execute(
 
     if (pair->mode == PROCESS_PAIR_ACTIVE_PASSIVE) {
         if (!main_ok) {
+
+#ifdef ERROR_MONITOR_ENABLE
             error_monitor_save_event(__FILE__, pair->context, "Active failed, switching to passive", __LINE__, ERROR_LEVEL_WARNING);
+#endif
+
             bool backup_ok = pair->backup(result_backup, input);
             if (!backup_ok) {
+
+#ifdef ERROR_MONITOR_ENABLE
                 error_monitor_save_event(__FILE__, pair->context, "Passive also failed", __LINE__, ERROR_LEVEL_ERROR);
+#endif
+
                 return false;
             }
             return true;
@@ -30,12 +39,20 @@ bool process_pair_execute(
     if (pair->mode == PROCESS_PAIR_ACTIVE_ACTIVE) {
         bool backup_ok = pair->backup(result_backup, input);
         if (!main_ok || !backup_ok) {
+
+#ifdef ERROR_MONITOR_ENABLE
             error_monitor_save_event(__FILE__, pair->context, "One of active processes failed", __LINE__, ERROR_LEVEL_ERROR);
+#endif
+
             return false;
         }
 
         if (!pair->compare(result_main, result_backup)) {
+
+#ifdef ERROR_MONITOR_ENABLE
             error_monitor_save_event(__FILE__, pair->context, "Mismatch between active-active results", __LINE__, ERROR_LEVEL_ERROR);
+#endif
+
             return false;
         }
         return true;
@@ -104,11 +121,17 @@ bool process_pair_execute(
         xTaskCreate(process_task_runner, "MainProc", 512, &main_params, tskIDLE_PRIORITY + 1, NULL);
 
         if (xSemaphoreTake(sem_main, PROCESS_TIMEOUT) == pdFALSE || !main_params.success) {
+#ifdef ERROR_MONITOR_ENABLE
             error_monitor_save_event(__FILE__, pair->context, "Active failed, switching to passive", __LINE__, ERROR_LEVEL_WARNING);
+#endif
 
             xTaskCreate(process_task_runner, "BackupProc", 512, &backup_params, tskIDLE_PRIORITY + 1, NULL);
             if (xSemaphoreTake(sem_backup, PROCESS_TIMEOUT) == pdFALSE || !backup_params.success) {
+
+#ifdef ERROR_MONITOR_ENABLE
                 error_monitor_save_event(__FILE__, pair->context, "Passive also failed", __LINE__, ERROR_LEVEL_ERROR);
+#endif
+
                 vSemaphoreDelete(sem_main);
                 vSemaphoreDelete(sem_backup);
                 return false;
@@ -128,14 +151,22 @@ bool process_pair_execute(
         bool backup_done = (xSemaphoreTake(sem_backup, PROCESS_TIMEOUT) == pdTRUE);
 
         if (!main_done || !backup_done || !main_params.success || !backup_params.success) {
+
+#ifdef ERROR_MONITOR_ENABLE
             error_monitor_save_event(__FILE__, pair->context, "One of active processes failed", __LINE__, ERROR_LEVEL_ERROR);
+#endif
+
             vSemaphoreDelete(sem_main);
             vSemaphoreDelete(sem_backup);
             return false;
         }
 
         if (!pair->compare(result_main, result_backup)) {
+
+#ifdef ERROR_MONITOR_ENABLE
             error_monitor_save_event(__FILE__, pair->context, "Mismatch between active-active results", __LINE__, ERROR_LEVEL_ERROR);
+#endif
+
             vSemaphoreDelete(sem_main);
             vSemaphoreDelete(sem_backup);
             return false;

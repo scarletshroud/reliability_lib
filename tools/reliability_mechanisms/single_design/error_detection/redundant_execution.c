@@ -1,4 +1,6 @@
 #include "redundant_execution.h"
+
+#include "tools/tools_config.h"
 #include "error_monitor/error_monitor.h"
 
 uint8_t redundant_execute_noargs(
@@ -16,7 +18,11 @@ uint8_t redundant_execute_noargs(
     target_fn(result_buffer2);
 
     if (!compare(result_buffer1, result_buffer2)) {
+
+#ifdef ERROR_MONITOR_ENABLE
         error_monitor_save_event(__FILE__, context, "Redundant execution mismatch", __LINE__, ERROR_LEVEL_ERROR);
+#endif
+
         return 0;
     }
 
@@ -39,7 +45,11 @@ uint8_t redundant_execute_with_args(
     target_fn(result_buffer2, input_arg);
 
     if (!compare(result_buffer1, result_buffer2)) {
+
+#ifdef ERROR_MONITOR_ENABLE
         error_monitor_save_event(__FILE__, context, "Redundant execution mismatch", __LINE__, ERROR_LEVEL_ERROR);
+#endif
+
         return 0;
     }
 

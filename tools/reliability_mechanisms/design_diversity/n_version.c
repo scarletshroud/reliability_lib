@@ -1,5 +1,10 @@
 #include "n_version.h"
+
+#include "tools/tools_config.h"
+
+#ifdef ERROR_MONITOR_ENABLE
 #include "error_monitor/error_monitor.h"
+#endif
 
 bool n_version_execute(
     const n_version_exec_t* exec,
@@ -17,7 +22,11 @@ bool n_version_execute(
 
         bool ok = exec->versions[i](result_buffers[i], input);
         if (!ok) {
+
+#ifdef ERROR_MONITOR_ENABLE
             error_monitor_save_event(__FILE__, exec->context, "Version execution failed", __LINE__, ERROR_LEVEL_ERROR);
+#endif
+
             return false;
         }
     }
@@ -39,7 +48,11 @@ bool n_version_execute(
         case N_VERSION_VOTING_STRICT:
             for (uint32_t i = 1; i < exec->version_count; ++i) {
                 if (!exec->compare(result_buffers[0], result_buffers[i])) {
+
+#ifdef ERROR_MONITOR_ENABLE
                     error_monitor_save_event(__FILE__, exec->context, "Strict voting mismatch", __LINE__, ERROR_LEVEL_ERROR);
+#endif 
+
                     return false;
                 }
             }
@@ -55,14 +68,22 @@ bool n_version_execute(
                     return true;
                 }
             }
+
+#ifdef ERROR_MONITOR_ENABLE
             error_monitor_save_event(__FILE__, exec->context, "Majority voting failed", __LINE__, ERROR_LEVEL_ERROR);
+#endif 
+
             return false;
         }
 
         case N_VERSION_VOTING_THRESHOLD:
         {
             if (exec->threshold == 0 || exec->threshold > exec->version_count) {
+
+#ifdef ERROR_MONITOR_ENABLE
                 error_monitor_save_event(__FILE__, exec->context, "Invalid threshold", __LINE__, ERROR_LEVEL_ERROR);
+#endif
+
                 return false;
             }
 
@@ -73,12 +94,19 @@ bool n_version_execute(
                 }
             }
 
+#ifdef ERROR_MONITOR_ENABLE
             error_monitor_save_event(__FILE__, exec->context, "Threshold voting failed", __LINE__, ERROR_LEVEL_ERROR);
+#endif
+
             return false;
         }
 
         default:
+
+#ifdef ERROR_MONITOR_ENABLE
             error_monitor_save_event(__FILE__, exec->context, "Unknown voting mode", __LINE__, ERROR_LEVEL_ERROR);
+#endif
+
             return false;
     }
 }

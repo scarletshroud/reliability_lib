@@ -1,5 +1,10 @@
 #include "recovery_block.h"
+
+#include "tools/tools_config.h"
+
+#ifdef ERROR_MONITOR_ENABLE
 #include "error_monitor/error_monitor.h"
+#endif 
 
 bool recovery_block_execute(
     const recovery_block_t* rb,
@@ -15,14 +20,21 @@ bool recovery_block_execute(
 
             bool ok = rb->variants[i](output, input);
             if (!ok) {
+
+#ifdef ERROR_MONITOR_ENABLE
                 error_monitor_save_event(__FILE__, rb->context, "RB variant failed", __LINE__, ERROR_LEVEL_WARNING);
+#endif
                 continue;
             }
 
             if (rb->acceptance_test && rb->acceptance_test(output)) {
                 return true;
             } else {
+
+#ifdef ERROR_MONITOR_ENABLE
                 error_monitor_save_event(__FILE__, rb->context, "RB acceptance test failed", __LINE__, ERROR_LEVEL_WARNING);
+#endif
+
             }
         }
 
@@ -44,7 +56,11 @@ bool recovery_block_execute(
             if (!rb->variants[i] || !temp_results[i]) continue;
             bool ok = rb->variants[i](temp_results[i], input);
             if (!ok) {
+
+#ifdef ERROR_MONITOR_ENABLE
                 error_monitor_save_event(__FILE__, rb->context, "CRB variant execution failed", __LINE__, ERROR_LEVEL_WARNING);
+#endif 
+
                 return false;
             }
         }
@@ -72,7 +88,11 @@ bool recovery_block_execute(
         }
 
         if (max_votes < (rb->variant_count / 2 + 1)) {
+
+#ifdef ERROR_MONITOR_ENABLE
             error_monitor_save_event(__FILE__, rb->context, "CRB: no consensus", __LINE__, ERROR_LEVEL_ERROR);
+#endif 
+
             return false;
         }
 

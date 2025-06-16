@@ -1,4 +1,6 @@
 #include "input_validation.h"
+
+#include "tools/tools_config.h"
 #include "error_monitor/error_monitor.h"
 
 uint8_t input_validate_field(const validator_t* validator, const void* value) {
@@ -8,6 +10,8 @@ uint8_t input_validate_field(const validator_t* validator, const void* value) {
 
     uint8_t ok = validator->validate(value, validator->context);
     if (!ok) {
+
+#ifdef ERROR_MONITOR_ENABLE
         error_monitor_save_event(
             __FILE__,
             validator->field_name,
@@ -15,6 +19,8 @@ uint8_t input_validate_field(const validator_t* validator, const void* value) {
             __LINE__,
             ERROR_LEVEL_ERROR
         );
+#endif
+
     }
     return ok;
 }

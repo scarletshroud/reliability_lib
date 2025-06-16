@@ -1,5 +1,11 @@
 #include "deadline_monitor.h"
+
+#include "tools/tools_config.h"
+
+#ifdef ERROR_MONITOR_ENABLE
 #include "error_monitor/error_monitor.h"
+#endif
+
 #include "platform/adapter/platform_adapter.h"
 
 void deadline_monitor_init(deadline_monitor_t* monitor, uint32_t deadline_us) {
@@ -28,7 +34,11 @@ void deadline_monitor_stop(deadline_monitor_t* monitor, const char* context) {
 
     if (elapsed > monitor->deadline_us) {
         monitor->timing_violation = 1;
+
+#ifdef ERROR_MONITOR_ENABLE
         error_monitor_save_event(__FILE__, context, "Deadline violation", __LINE__, ERROR_LEVEL_ERROR);
+#endif
+
     }
 
     monitor->total_time_us += elapsed;

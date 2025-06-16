@@ -16,24 +16,24 @@ extern "C" {
     } cfc_monitor_t;
 
     /**
-     * \brief           Функция инициализации CFC-монитора
-     * \param[in]       monitor: Указатель на структуру монитора
+     * @brief           Функция инициализации CFC-монитора
+     * @param[in]       monitor: Указатель на структуру монитора
     */
     void cfc_monitor_init(cfc_monitor_t* monitor);
 
     /**
-     * \brief           Функция установки сигнатуры при входе в базовый блок
-     * \param[in]       monitor: Указатель на структуру монитора
-     * \param[in]       block_signature: Сигнатура блока
+     * @brief           Функция установки сигнатуры при входе в базовый блок
+     * @param[in]       monitor: Указатель на структуру монитора
+     * @param[in]       block_signature: Сигнатура блока
     */
     void cfc_monitor_enter(cfc_monitor_t* monitor, uint32_t block_signature);
 
     /**
-     * \brief           Функция проверки сигнатуры при переходе в следующий базовый блок
-     * \param[in]       monitor:  Указатель на структуру монитора
-     * \param[in]       expected_signature: Ожидаемая сигнатура
-     * \param[in]       context: Указатель на дополнительный контекст для вывода сообщений
-     * \return          Результат проверки: 0 - ошибка, 1 - успешно
+     * @brief           Функция проверки сигнатуры при переходе в следующий базовый блок
+     * @param[in]       monitor:  Указатель на структуру монитора
+     * @param[in]       expected_signature: Ожидаемая сигнатура
+     * @param[in]       context: Указатель на дополнительный контекст для вывода сообщений
+     * @return          Результат проверки: 0 - ошибка, 1 - успешно
     */
     uint8_t cfc_monitor_check(cfc_monitor_t* monitor, uint32_t expected_signature, const char* context);
 

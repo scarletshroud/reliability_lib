@@ -17,15 +17,15 @@ typedef enum {
 
 /// 
 /**
- * \brief           Функция для выполнения функции с различными входными данными и сравнения их результов
- * \param[in]       target_fn: Указатель на целевую функцию
- * \param[in]       compare: Функция-компаратор
- * \param[in]       input_variants: Различные наборы входных данных
- * \param[in]       input_count: Количество входов
- * \param[in]       result_buffers: Выходные данные
- * \param[in]       voting: Режим голосования
- * \param[in]       context: Контекст выполнения
- * \return          Результат проверки: 0 - ошибка, 1 - успешно
+ * @brief           Функция для выполнения функции с различными входными данными и сравнения их результов
+ * @param[in]       target_fn: Указатель на целевую функцию
+ * @param[in]       compare: Функция-компаратор
+ * @param[in]       input_variants: Различные наборы входных данных
+ * @param[in]       input_count: Количество входов
+ * @param[in]       result_buffers: Выходные данные
+ * @param[in]       voting: Режим голосования
+ * @param[in]       context: Контекст выполнения
+ * @return          Результат проверки: 0 - ошибка, 1 - успешно
 */
 uint8_t data_diversity_execute(
     void (*target_fn)(void* result, const void* input),

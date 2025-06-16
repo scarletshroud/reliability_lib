@@ -1,5 +1,7 @@
 #include "reliability_metrics.h"
 
+#include <math.h>
+
 #define MAX_FAILURES_TRACKED 256
 
 static uint32_t failure_counter = 0;
@@ -29,7 +31,7 @@ reability_metrics_t reliability_metrics_calculate(uint32_t current_time_sec, uin
     }
 
     // Среднее время между сбоями
-    stats.mtbf = (float)(current_time_sec) / failure_counter;
+    stats.mtbf = (float)(current_time_sec) / (float)failure_counter;
 
     // Интенсивность отказов (λ)
     stats.lambda = 1.0f / stats.mtbf;

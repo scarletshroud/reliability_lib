@@ -1,1 +1,7 @@
 build/
+
+Debug RAM
+Debug SPIFI
+Debug_EEPROM
+
+.settings

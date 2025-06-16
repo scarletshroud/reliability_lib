@@ -9,12 +9,13 @@
 *
 */
 typedef struct {
-    uint8_t tests_cnt;          /*!< Point X coordinate */
-    uint8_t req_intensity;      /*!< Интенсивность поступления заявок */
+    uint8_t tests_cnt;          /*!< Количество тестов */
+    uint32_t req_intensity;      /*!< Интенсивность поступления заявок */
     uint8_t specified_time;     /*!< Заданное время t */
     uint8_t test_duration[SHUMAN_BASED_MAX_TESTS_COUNT];
     uint8_t test_errors_cnt[SHUMAN_BASED_MAX_TESTS_COUNT];
     float p_fault_transform;    /*!< Вероятность трансформации проявленной ошибки */
+    float p_fault;// todo: вероятность сбойных ошибок
     float sys_fault_intensity;  /*!< Интенсивность отказов средств обеспечения отказоустойчивости системы */
     float p_fault_detect;       /*!< Вероятность правильного обнаружения отказов */
     float p_fault_process;      /*!< Вероятность успешного парирования обнаруженного отказа  */
